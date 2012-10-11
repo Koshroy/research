@@ -1,0 +1,35 @@
+circle {
+    fill: #FFFFCC;
+    stroke: steelblue;
+    stroke-width: 1.5px;
+}
+
+circle.leaf {
+    stroke: #009933;
+    stroke-width: 1.5px;
+}
+
+circle.relation {
+    fill: #FFFFCC;
+}
+
+body {
+    padding-top: 20px;
+    padding-left: 20px;
+}
+
+div#showLeafPOS {
+    margin-bottom: 10px;
+}
+
+.link {
+  fill: none;
+  stroke: #ccc;
+  stroke-width: 4.5px;
+}
+
+label#sentLabel {
+    vertical-align: top;
+}
+
+​

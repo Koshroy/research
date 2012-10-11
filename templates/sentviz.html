@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+
+    <link rel="stylesheet" type="text/css" href="/static/css/bootstrap.css" >
+    <link rel="stylesheet" type="text/css" href="/static/css/sentviz.css" >
+  </head>
+  <body>
+    <div id="formSpan" class="span4">
+      <form id="parseForm" action="#" method="post">
+	<div>
+	  <label id="sentLabel" style="padding-top: 0em;" for="sentenceText">Sentence:</label>
+	  <textarea id="sentenceText" rows="5" cols="20"></textarea>
+	</div>
+	<div>
+	  <label for="">Add Relation:</label>
+	  <input type="text" id="relText"></input>
+	</div>
+
+	<div>
+	  <select id="relSelect" multiple="multiple">
+	  </select>
+	</div>
+
+	<div id="showLeafPOS">
+	  <input type="checkbox" id="showLeafCheck"> Show Parts of Speech for Leaves
+	</div>
+	<div>
+	  <button type="button" id="addRelBut">Add Relation </button>
+	  <button>Parse Sentence</button>
+	</div>
+
+      </form>
+    </div>
+
+    
+    <div id="vizSpan" class="span4">
+      <div id="viz"></div>
+    </div>
+    <script type="text/javascript" src="http://d3js.org/d3.v2.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/js/POSTree.js"></script>
+    <script type="text/javascript" src="/static/js/SVGTree.js"></script>
+    <script type="text/javascript" src="/static/js/sentviz.js"></script>
+   </body>
+
+</html>​

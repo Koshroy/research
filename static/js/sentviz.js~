@@ -1,0 +1,136 @@
+var canvasW = 800;
+var canvasH = 600;
+
+var vbX = 0;
+var vbY = 0;
+
+var leafPOS = false;
+
+function readyFunc()
+{
+    $("#parseForm").submit(function() {
+	console.log($("#sentenceText").val());
+	$.post("/sentparse",
+	       { "sentence" : $("#sentenceText").val()},
+	       function(a) { dispPosTree(new POSTree(a));}, "json");
+	return false;
+    });
+
+    $(document).keydown(function(event){
+	console.log("keydown");
+	switch(event.which)
+	{
+	case 37: // Left
+	    if (vbX >= 9)
+		vbX -= 10;
+	    event.preventDefault();
+	    break;
+	case 38: // Up
+	    if (vbY >= 10)
+		vbY -= 10;
+	    break;
+	case 39: // Right
+	    vbX += 10;
+	    break;
+	case 40: // Down
+	    vbY += 10;
+	    event.preventDefault();
+	    break;
+	}
+	d3.select("#canvas").attr("viewBox", ""+ vbX + " " + vbY + " " + canvasW + " " + canvasH);
+	return true;
+    });
+
+    $("#showLeafCheck").live('change', function(){ leafPOS = $(this).attr('checked') == "checked" ? true : false; showLeafPOS()});
+}
+
+function projX(s, x)
+{
+    return (1 + (0.01 * s))*x + 20;
+}
+
+function projY(s, y)
+{
+    return (1 + (0.01 * s))*y + 20;
+}
+
+function dispPosTree(treeData)
+{
+    d3.selectAll("svg").remove();
+
+    var vis = d3.select("#viz").append("svg:svg")
+	.attr("width", canvasW)
+	.attr("height", canvasH)
+        .attr("id", "canvas")
+	.append("svg:g")
+	.attr("transform", "translate(40, 10)");
+
+    var nnum = treeData.numNodes();
+    
+
+    var tree = d3.layout.tree()
+	.size([canvasW-100,canvasH-100]);
+
+    var diagonal = d3.svg.diagonal()
+	.projection(function(d) { return [projX(nnum, d.x), projY(nnum, d.y)]; });
+
+    var nodes = tree.nodes(treeData.toViz());
+
+    var link = vis.selectAll("pathlink")
+	.data(tree.links(nodes))
+	.enter().append("svg:path")
+	.attr("class", "link")
+	.attr("d", diagonal);
+
+    var node = vis.selectAll("g.node")
+	.data(nodes)
+	.enter().append("svg:g")
+	.attr("transform", function(d) { return "translate(" + projX(nnum, d.x) + "," + projY(nnum, d.y) + ")"; })
+
+    node.append("svg:circle")
+	.attr("r", function(d) { return d.type == "text" ? 10*Math.sqrt(d.text.length) : 10*Math.sqrt(d.name.length); })
+        .attr("class", function(d) { return d.type == "text" ? "leaf" : ""; });
+
+    node.append("svg:text")
+	.attr("dy", ".3em")
+	.attr("text-anchor", "middle")
+	.text(function(d) { return d.type == "text" ? d.text : d.pos; });
+}
+
+function showLeafPOS()
+{
+    console.log('ikr');
+
+    var node = d3.select("#viz").selectAll("g");
+    
+    node.selectAll("text").text(
+	function (d) 
+	{ 
+	    if (leafPOS)
+		return d.pos;
+	    else
+		return d.type == "text" ? d.text : d.pos;
+	}
+    );
+
+    node.selectAll("circle").attr("r", 
+	function (d) 
+	{ 
+	    if (leafPOS)
+		return 10*Math.sqrt(d.pos.length);
+	    else
+		return d.type == "text" ? 10*Math.sqrt(d.text.length) : 10*Math.sqrt(d.pos.length);
+	}
+    );
+
+}
+
+// function colorRelations(relations)
+// {
+//     for(var i = 0; i < relations.length; i++)
+//     {
+// 	relations[i]
+//     }
+// }
+
+$(document).ready(readyFunc);

@@ -1,0 +1,60 @@
+function SVGTree(divName)
+{
+    // Div which the tree is rendered in
+    this._divName = divName;
+
+    // Viewbox parameters
+    this._vbX = 0;
+    this._vbY = 0;
+};
+
+SVGTree.prototype.div = function(divName)
+{
+    if (arguments.length != 0)
+	this._divName = divName;
+    else
+	return this._divName;
+}
+
+SVGTree.prototype.dispTree = function(treeData)
+{
+    d3.selectAll("svg").remove();
+
+    var vis = d3.select("#viz").append("svg:svg")
+	.attr("width", canvasW)
+	.attr("height", canvasH)
+        .attr("id", "canvas")
+	.append("svg:g")
+	.attr("transform", "translate(40, 10)");
+
+    var nnum = treeData.numNodes();
+    
+
+    var tree = d3.layout.tree()
+	.size([canvasW-100,canvasH-100]);
+
+    var diagonal = d3.svg.diagonal()
+	.projection(function(d) { return [projX(nnum, d.x), projY(nnum, d.y)]; });
+
+    var nodes = tree.nodes(treeData.toViz());
+
+    var link = vis.selectAll("pathlink")
+	.data(tree.links(nodes))
+	.enter().append("svg:path")
+	.attr("class", "link")
+	.attr("d", diagonal);
+
+    var node = vis.selectAll("g.node")
+	.data(nodes)
+	.enter().append("svg:g")
+	.attr("transform", function(d) { return "translate(" + projX(nnum, d.x) + "," + projY(nnum, d.y) + ")"; })
+
+    node.append("svg:circle")
+	.attr("r", function(d) { return d.type == "text" ? 10*Math.sqrt(d.text.length) : 10*Math.sqrt(d.name.length); })
+        .attr("class", function(d) { return d.type == "text" ? "leaf" : ""; });
+
+    node.append("svg:text")
+	.attr("dy", ".3em")
+	.attr("text-anchor", "middle")
+	.text(function(d) { return d.type == "text" ? d.text : d.pos; });
+}
